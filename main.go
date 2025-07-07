@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject10/goSquare"
+	"awesomeProject10/models"
 	"awesomeProject10/zapLogger"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+
 	jobs := make(chan int, 10)
 	square := make(chan int, 10)
 	var errChan = make(chan error)
@@ -16,6 +18,8 @@ func main() {
 
 	zapLogger.Init()
 	logger := zapLogger.Log
+
+	models.InitDb()
 
 	wg.Add(1)
 	go goSquare.GetSquare(jobs, square, &wg)

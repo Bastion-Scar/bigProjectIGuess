@@ -39,7 +39,6 @@ func Init() {
 		EncodeCaller: zapcore.ShortCallerEncoder,
 		EncodeTime:   zapcore.ISO8601TimeEncoder,
 	}
-
 	jsonCore := zapcore.NewCore(zapcore.NewJSONEncoder(jsonConfig), writeSyncer, zapcore.DebugLevel)
 	consoleCore := zapcore.NewCore(zapcore.NewConsoleEncoder(consoleConfig), os.Stdout, zapcore.InfoLevel)
 
