@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/joho/godotenv"
-	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
@@ -27,11 +26,11 @@ func InitDb() *gorm.DB {
 	dsn := os.Getenv("DSN")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Не удалось подключиться к БД:", zap.Error(err))
+		log.Fatal("Не удалось подключиться к БД:", err)
 	}
 	err = db.AutoMigrate(&OkLogs{})
 	if err != nil {
-		log.Fatal("Не удалось мигрировать БД:", zap.Error(err))
+		log.Fatal("Не удалось мигрировать БД:", err)
 	}
 	return db
 }

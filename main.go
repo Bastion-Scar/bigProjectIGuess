@@ -11,8 +11,6 @@ import (
 
 func main() {
 
-	jobs := make(chan int, 10)
-	square := make(chan int, 10)
 	var errChan = make(chan error)
 	var wg sync.WaitGroup
 
@@ -22,12 +20,15 @@ func main() {
 	db := models.InitDb()
 	go models.SendLogs(db)
 
-	wg.Add(1)
-	go goSquare.GetSquare(jobs, square, &wg)
-
 	r := gin.New()
 	r.Use(zapLogger.CustomLogger())
 	r.POST("/calculate", func(c *gin.Context) {
+		jobs := make(chan int, 10)
+		square := make(chan int, 10)
+
+		wg.Add(1)
+
+		go goSquare.GetSquare(jobs, square, &wg)
 		for i := 0; i <= 10; i++ {
 			var sq []int
 			sq = append(sq, <-square)
