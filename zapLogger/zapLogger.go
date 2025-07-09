@@ -1,6 +1,7 @@
 package zapLogger
 
 import (
+	"awesomeProject10/models"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -47,24 +48,32 @@ func Init() {
 
 	Log = zap.New(sampledCore)
 
-	if err := Log.Sync(); err != nil {
-		Log.Sugar().Fatal("Ошибка загрузки логгера", zap.Error(err))
-	}
 }
 
 func CustomLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
+
 		c.Next()
+
 		path := c.Request.URL.Path
 		raw := c.Request.URL.RawQuery
 		ip := c.ClientIP()
 		after := time.Since(start)
+
+		entry := models.OkLogs{
+			Path:     path,
+			Raw:      raw,
+			IP:       ip,
+			Duration: after.String(),
+		}
+
 		Log.Sugar().Debugw("request info",
 			"path", path,
 			"query", raw,
 			"ip", ip,
 			"duration", after,
 		)
+		models.LogChan <- entry
 	}
 }

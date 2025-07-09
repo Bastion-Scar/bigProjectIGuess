@@ -19,7 +19,8 @@ func main() {
 	zapLogger.Init()
 	logger := zapLogger.Log
 
-	models.InitDb()
+	db := models.InitDb()
+	go models.SendLogs(db)
 
 	wg.Add(1)
 	go goSquare.GetSquare(jobs, square, &wg)

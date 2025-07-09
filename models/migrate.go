@@ -1,38 +1,37 @@
 package models
 
 import (
-	"awesomeProject10/zapLogger"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"log"
 	"os"
 )
 
-type okLogs struct {
-	id       int64 `gorm:"primaryKey;autoIncrement"`
-	path     string
-	raw      string
-	ip       string
-	duration string
+type OkLogs struct {
+	ID       int `gorm:"primaryKey;autoIncrement"`
+	Path     string
+	Raw      string
+	IP       string
+	Duration string
 }
 
-func InitDb() {
-	zapLogger.Init()
-	logger := zapLogger.Log
+func InitDb() *gorm.DB {
 
 	err := godotenv.Load(".env")
 	if err != nil {
-		logger.Fatal("Ошибка загрузки .env файла")
+		log.Fatal("Ошибка загрузки .env файла")
 	}
 
 	dsn := os.Getenv("DSN")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Не удалось подключиться к базе данных:" + err.Error())
+		log.Fatal("Не удалось подключиться к БД:", zap.Error(err))
 	}
-
-	err = db.AutoMigrate(&okLogs{})
+	err = db.AutoMigrate(&OkLogs{})
 	if err != nil {
-		panic("Не удалось мигрировать таблицу:" + err.Error())
+		log.Fatal("Не удалось мигрировать БД:", zap.Error(err))
 	}
+	return db
 }
